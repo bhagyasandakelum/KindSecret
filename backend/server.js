@@ -12,7 +12,7 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use(xss());
+// app.use(xss()); // Removed because xss-clean crashes Express 5 due to req.query getter
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/kindsecret')
