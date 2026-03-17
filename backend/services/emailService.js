@@ -1,13 +1,18 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  streamTransport: true,
-  newline: 'windows'
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.EMAIL_PORT || '465'),
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 });
 
 async function sendKindSecretEmail(to, message, subject) {
   const mailOptions = {
-    from: '"KindSecret App" <secret@kindsecret.app>',
+    from: `"KindSecret App" <${process.env.EMAIL_USER || 'secret@kindsecret.app'}>`,
     to: to,
     subject: subject || 'Someone sent you a KindSecret 💌',
     text: `Hello,\n\nSomeone wanted to send you a kind message anonymously.\n\nMessage:\n${message}\n\nThis message was sent through KindSecret.\n\nSpread kindness.`
@@ -21,7 +26,7 @@ async function sendKindSecretEmail(to, message, subject) {
     console.log('----------------------------\n');
     return { messageId: 'simulated_id' };
   } else {
-    // Integrate real sendgrid/SES here
+    // Send real email via SMTP
     return await transporter.sendMail(mailOptions);
   }
 }

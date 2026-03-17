@@ -25,7 +25,8 @@ router.post('/send-secret', sendLimiter, async (req, res) => {
     const { recipientEmail, message, subject } = req.body;
     
     // Hash IP for abuse protection
-    const ipHash = hashIp(req.ip || req.connection.remoteAddress);
+    const ip = req.ip || req.socket?.remoteAddress || 'unknown';
+    const ipHash = hashIp(ip);
 
     // Basic validation
     if (!recipientEmail || !message) {
@@ -57,7 +58,7 @@ router.post('/send-secret', sendLimiter, async (req, res) => {
     res.json({ success: true, secretId, message: 'Your KindSecret was delivered.' });
   } catch (error) {
     console.error('Send Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', details: error.message, stack: error.stack });
   }
 });
 
